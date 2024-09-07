@@ -3,6 +3,7 @@ import { ChatBubbleIcon, GearIcon, HomeIcon } from '@radix-ui/react-icons';
 import classnames from 'classnames';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
 const links = [
     {
         label: 'Home',
@@ -22,11 +23,14 @@ const links = [
 ];
 
 const NavBar = () => {
-    const currentPath = usePathname();
-
+    const currentPath = usePathname().split('/').pop();
+    useEffect(() => {
+        console.log(currentPath);
+    }, []);
+    const ulClassName = `flex flex-col space-y-4 pt-4 justify-start items-center h-screen border-r shadow`;
     return (
         <nav>
-            <ul className='flex flex-col space-y-4 pt-4 justify-start items-center h-screen w-1/12 border-r'>
+            <ul className={ulClassName}>
                 {links.map((val, key) => (
                     <Link
                         key={key}

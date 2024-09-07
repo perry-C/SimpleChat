@@ -2,15 +2,17 @@ import { Card } from '@radix-ui/themes';
 
 const UserPage = ({ params }: { params: { user: string } }) => {
     return (
-        <div id='chat-page'>
-            <div id='chat-friends'>
-                <Card></Card>
+        <div id='chat-page' className='grid grid-cols-5 h-screen space-x-4 p-4'>
+            <div className='grid col-span-2 space-y-4'>
+                <div id='chat-groups' className='row-span-1'>
+                    <Card className='h-full shadow'></Card>
+                </div>
+                <div id='chat-friends' className='row-span-1'>
+                    <Card className='h-full shadow'></Card>
+                </div>
             </div>
-            <div id='chat-messaging'>
-                <Card></Card>
-            </div>
-            <div id='chat-settings'>
-                <Card></Card>
+            <div id='chat-messaging' className='col-span-3'>
+                <Card className='h-full shadow'></Card>
             </div>
         </div>
     );
