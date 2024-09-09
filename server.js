@@ -26,9 +26,30 @@ io.on('connection', (socket) => {
         socket.to(data.roomId).emit('receive_msg', data);
     });
 
+    socket.on('query_friends_list', async () => {
+        const users = [];
+        for ([id, socket] of io.of('/').sockets) {
+            users.push({
+                userId: id,
+                userName: socket.userName,
+            });
+        }
+        socket.emit('receive_friends_list', users);
+    });
+
     socket.on('disconnect', () => {
         console.log('A user disconnected:', socket.id);
     });
+});
+
+// Register the a middleware for user name authentication
+io.use((socket, next) => {
+    const userName = socket.handshake.auth.userName;
+    if (!userName) {
+        return next(new Error('invalid username'));
+    }
+    socket.userName = userName;
+    next();
 });
 
 const PORT = process.env.PORT || 3001;

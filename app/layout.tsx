@@ -22,10 +22,10 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <html lang="en" className={inter.className}>
+        <html lang='en' className={inter.className}>
             <body>
-                <Theme accentColor="violet">
-                    <main className="">{children}</main>
+                <Theme accentColor='violet'>
+                    <main className=''>{children}</main>
                 </Theme>
             </body>
         </html>
