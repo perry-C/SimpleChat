@@ -1,5 +1,5 @@
 export interface LoginInfo {
     userName: string;
-    userId: string | undefined; //socketId
+    userId: string; //socketId
     password: string;
 }

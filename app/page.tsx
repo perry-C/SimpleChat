@@ -14,9 +14,10 @@ const Home = () => {
 
     const handleSignIn = () => {
         if (userName !== '' && password !== '') {
+            router.prefetch(`/${userName}/chat`);
             socket.auth = { userName };
-            router.push(`/${userName}/chat`);
             socket.connect();
+            router.push(`/${userName}/chat`);
         } else {
             alert('password and username pls');
         }

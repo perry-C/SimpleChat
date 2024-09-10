@@ -24,10 +24,9 @@ const links = [
 const NavBar = () => {
     const currentPath = usePathname().split('/').pop();
 
-    const ulClassName = `flex flex-col space-y-4 pt-4 justify-start items-center h-screen border-r shadow`;
     return (
         <nav>
-            <ul className={ulClassName}>
+            <ul className='flex flex-col space-y-4 pt-4 justify-start items-center h-screen border-r shadow'>
                 {links.map((val, key) => (
                     <Link
                         key={key}
