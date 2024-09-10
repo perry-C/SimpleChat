@@ -12,11 +12,11 @@ const Home = () => {
     const [password, setPassword] = useState('');
     const router = useRouter();
 
-    const handleSignIn = async () => {
+    const handleSignIn = () => {
         if (userName !== '' && password !== '') {
             socket.auth = { userName };
-            socket.connect();
             router.push(`/${userName}/chat`);
+            socket.connect();
         } else {
             alert('password and username pls');
         }
