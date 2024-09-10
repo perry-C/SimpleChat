@@ -13,9 +13,13 @@ const UserPage = ({ params }: { params: { user: string } }) => {
     }, []);
 
     useEffect(() => {
-        socket.on('receive_friends_list', (data) => {
+        socket.on('user_connected', (user) => {
+            console.log('a new user has entered the chat');
+            setFriendsList([...friendsList, user]);
+        });
+        socket.on('receive_friends_list', (users) => {
             console.log('receiving friend list');
-            setFriendsList(data);
+            setFriendsList(users);
         });
     }, [socket]);
 
