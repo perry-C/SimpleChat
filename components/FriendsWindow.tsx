@@ -2,8 +2,8 @@ import { LoginInfo } from '@/common/type';
 import { socket } from '@/socket';
 import { TriangleRightIcon } from '@radix-ui/react-icons';
 import { Avatar } from '@radix-ui/themes';
+import classnames from 'classnames';
 import { useEffect, useState } from 'react';
-
 const FriendsWindow = () => {
     const [friendsList, setFriendsList] = useState([
         { userName: 'zed', password: '', userId: '' },
@@ -40,10 +40,17 @@ const FriendsWindow = () => {
             <div className='border shadow rounded-lg m-2 p-2'>
                 <button
                     onClick={() => handleFriendSelect(friend)}
-                    className='hover:bg-gray-100 active:bg-gray-200 transition rounded-lg p-2 flex gap-2 items-center justify-around w-full'
+                    className={classnames({
+                        'hover:bg-gray-100 active:bg-gray-200 transition rounded-lg p-2 flex gap-2 items-center justify-around w-full':
+                            true,
+                    })}
+                    disabled={socket.id === friend.userId}
                 >
                     <Avatar fallback={friend.userName} />
                     <div>{friend.userName}</div>
+                    {socket.id === friend.userId && (
+                        <div className='opacity-50'>(yourself)</div>
+                    )}
                     <div className='ml-auto'>
                         <TriangleRightIcon />
                     </div>
