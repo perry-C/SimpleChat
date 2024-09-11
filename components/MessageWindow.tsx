@@ -29,9 +29,9 @@ const MessageWindow = (props: any) => {
 
     const handleMessageUpdate = (e: ChangeEvent<HTMLInputElement>) => {
         message.current = e.target.value;
-        console.log(message.current);
     };
-    const handleMessageSend = () => {
+    const handleMessageSend = (e: any) => {
+        if (e.key !== 'Enter') return;
         if (message.current !== '') {
             socket.emit('send_message', {
                 message,
@@ -68,6 +68,7 @@ const MessageWindow = (props: any) => {
                     className='w-full min-h-full'
                     variant='classic'
                     onChange={handleMessageUpdate}
+                    onKeyDown={handleMessageSend}
                     size='3'
                 ></TextField.Root>
                 <button
