@@ -19,7 +19,7 @@ const mockData = [
 
 const MessageWindow = (props: any) => {
     const message = useRef('');
-
+    const messageInputRef = useRef<HTMLInputElement>(null);
     // const [messageLog, setMessageLog] = useState<MessageData[]>(mockData);
     const [messageLog, setMessageLog] = useState<MessageData[]>([]);
 
@@ -31,8 +31,9 @@ const MessageWindow = (props: any) => {
         message.current = e.target.value;
     };
     const handleMessageSend = (e: any) => {
-        if (e.key !== 'Enter') return;
+        if (e.type === 'keydown' && e.key !== 'Enter') return;
         if (message.current !== '') {
+            if (messageInputRef.current) messageInputRef.current.value = '';
             socket.emit('send_message', {
                 message,
                 to: props.selectedFriendId,
@@ -70,6 +71,7 @@ const MessageWindow = (props: any) => {
                     onChange={handleMessageUpdate}
                     onKeyDown={handleMessageSend}
                     size='3'
+                    ref={messageInputRef}
                 ></TextField.Root>
                 <button
                     onClick={handleMessageSend}

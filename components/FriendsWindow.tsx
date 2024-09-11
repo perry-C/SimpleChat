@@ -41,7 +41,7 @@ const FriendsWindow = (props: any) => {
                     })}
                     disabled={socket.id === friend.userId}
                 >
-                    <Avatar fallback={friend.userName} />
+                    <Avatar fallback={friend.userName[0]} />
                     <div>{friend.userName}</div>
                     {socket.id === friend.userId && (
                         <div className='opacity-50'>(yourself)</div>
