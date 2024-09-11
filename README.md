@@ -5,12 +5,12 @@ This is a web-based chat application developed using next.js as front-end and so
 To start the server, use:
 
 ```bash
-npm run dev
+npm run node
 ```
 
 To start the client, use:
 ```bash
-npm run node
+npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
