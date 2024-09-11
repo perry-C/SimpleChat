@@ -1,29 +1,39 @@
 import { socket } from '@/socket';
 import { Button, TextField } from '@radix-ui/themes';
-import { ChangeEvent, useRef, useState } from 'react';
+import { ChangeEvent, RefObject, useRef, useState } from 'react';
 
 interface MessageData {
     content: string;
     fromSelf: boolean;
 }
 
-const MessageWindow = (props: { userId: string }) => {
+const MessageWindow = (props: { selectedFriendId: RefObject<string> }) => {
     const message = useRef('');
     const [messageLog, setMessageLog] = useState<MessageData[]>([]);
+
+    socket.on('receive_message', (message) => {
+        console.log('Client receiving message');
+        console.log(messageLog);
+        setMessageLog([...messageLog, { content: message, fromSelf: false }]);
+    });
 
     const handleMessageUpdate = (e: ChangeEvent<HTMLInputElement>) => {
         message.current = e.target.value;
         console.log(message.current);
     };
     const handleMessageSend = () => {
+        console.log('handle Message Send');
+
         if (message.current !== '') {
-            socket.emit('send_message', { message, to: props.userId });
+            socket.emit('send_message', {
+                message,
+                to: props.selectedFriendId.current,
+            });
 
             setMessageLog([
                 ...messageLog,
                 { content: message.current, fromSelf: true },
             ]);
-            setMessageLog([]);
         }
     };
 

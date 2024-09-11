@@ -27,13 +27,7 @@ io.on('connection', (socket) => {
         console.log(`user with id-${socket.id} joined room - ${roomId}`);
     });
 
-    socket.on('send_msg', (data) => {
-        console.log(data, 'DATA');
-        //This will send a message to a specific room ID
-        socket.to(data.roomId).emit('receive_msg', data);
-    });
-
-    socket.on('query_friends_list', async () => {
+    socket.on('query_friends_list', () => {
         const users = [];
         for ([id, socket] of io.of('/').sockets) {
             users.push({
@@ -42,6 +36,12 @@ io.on('connection', (socket) => {
             });
         }
         socket.emit('receive_friends_list', users);
+    });
+
+    socket.on('send_message', ({ message, to }) => {
+        console.log(`Server sending message from ${socket.id}`);
+        socket.to(to).emit('receive_message', message.current);
+        console.log(`Server sending message to ${to}`);
     });
 
     socket.on('disconnect', () => {

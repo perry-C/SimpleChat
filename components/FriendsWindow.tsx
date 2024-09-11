@@ -4,36 +4,31 @@ import { TriangleRightIcon } from '@radix-ui/react-icons';
 import { Avatar } from '@radix-ui/themes';
 import classnames from 'classnames';
 import { useEffect, useState } from 'react';
-const FriendsWindow = () => {
+const FriendsWindow = (props: any) => {
     const [friendsList, setFriendsList] = useState([
-        { userName: 'zed', password: '', userId: '' },
+        { userName: '', password: '', userId: '' },
     ]);
-    const [selectedFriendId, setSelectedFriendId] = useState('');
 
     useEffect(() => {
         handleFriendsQuery();
     }, []);
 
-    useEffect(() => {
-        socket.on('user_connected', (user) => {
-            console.log('a new user has entered the chat');
-            setFriendsList([...friendsList, user]);
-        });
-        socket.on('receive_friends_list', (users) => {
-            console.log('receiving friend list');
-            setFriendsList(users);
-        });
-    }, [socket]);
+    socket.on('user_connected', (user) => {
+        console.log('a new user has entered the chat');
+        setFriendsList([...friendsList, user]);
+    });
+    socket.on('receive_friends_list', (users) => {
+        console.log('receiving friend list');
+        setFriendsList(users);
+    });
 
     const handleFriendsQuery = () => {
         socket.emit('query_friends_list');
     };
     const handleFriendSelect = (friend: LoginInfo) => {
-        setSelectedFriendId(friend.userId);
-        console.log(selectedFriendId);
+        props.selectedFriendId.current = friend.userId;
+        console.log(friend.userId);
     };
-
-    // ===============================================
 
     const friendsDisplay = friendsList.map((friend: LoginInfo) => (
         <li>
