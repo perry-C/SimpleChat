@@ -26,7 +26,7 @@ const FriendsWindow = (props: any) => {
         socket.emit('query_friends_list');
     };
     const handleFriendSelect = (friend: LoginInfo) => {
-        props.selectedFriendId.current = friend.userId;
+        props.setSelectedFriendId(friend.userId);
         console.log(friend.userId);
     };
 

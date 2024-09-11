@@ -1,13 +1,13 @@
 import { socket } from '@/socket';
 import { Button, TextField } from '@radix-ui/themes';
-import { ChangeEvent, RefObject, useRef, useState } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 
 interface MessageData {
     content: string;
     fromSelf: boolean;
 }
 
-const MessageWindow = (props: { selectedFriendId: RefObject<string> }) => {
+const MessageWindow = (props: any) => {
     const message = useRef('');
     const [messageLog, setMessageLog] = useState<MessageData[]>([]);
 
@@ -27,7 +27,7 @@ const MessageWindow = (props: { selectedFriendId: RefObject<string> }) => {
         if (message.current !== '') {
             socket.emit('send_message', {
                 message,
-                to: props.selectedFriendId.current,
+                to: props.selectedFriendId,
             });
 
             setMessageLog([
