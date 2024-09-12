@@ -17,16 +17,16 @@ io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
     // notify existing users
-    socket.broadcast.emit('user_connected', {
+    socket.broadcast.emit('another_user_connected', {
         userId: socket.id,
         userName: socket.userName,
         connected: true,
     });
 
-    socket.on('join_room', (roomId) => {
-        socket.join(roomId);
-        console.log(`user with id-${socket.id} joined room - ${roomId}`);
-    });
+    // socket.on('join_room', (roomId) => {
+    //     socket.join(roomId);
+    //     console.log(`user with id-${socket.id} joined room - ${roomId}`);
+    // });
 
     socket.on('query_friends_list', () => {
         const users = [];
@@ -48,6 +48,7 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         console.log('A user disconnected:', socket.id);
+        socket.broadcast.emit('another_user_disconnected', socket.id);
     });
 });
 

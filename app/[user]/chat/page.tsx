@@ -17,14 +17,12 @@ const UserPage = ({ params }: { params: { user: string } }) => {
         handleFriendsQuery();
     }, []);
 
-    socket.on('user_connected', (user) => {
-        console.log('a new user has entered the chat');
+    socket.on('another_user_connected', (user) => {
         setUserList([...userList, user]);
     });
 
-    socket.on('user_connected', (user) => {
-        console.log('The user has left the chat');
-        setUserList([...userList, user]);
+    socket.on('another_user_disconnected', (userId) => {
+        setUserList(userList.filter((u) => u.userId != userId));
     });
 
     socket.on('receive_friends_list', (users) => {
