@@ -3,47 +3,26 @@ import { socket } from '@/socket';
 import { TriangleRightIcon } from '@radix-ui/react-icons';
 import { Avatar } from '@radix-ui/themes';
 import classnames from 'classnames';
-import { useEffect, useState } from 'react';
 const FriendsWindow = (props: any) => {
-    const [friendsList, setFriendsList] = useState([
-        { userName: '', password: '', userId: '' },
-    ]);
-
-    useEffect(() => {
-        handleFriendsQuery();
-    }, []);
-
-    socket.on('user_connected', (user) => {
-        console.log('a new user has entered the chat');
-        setFriendsList([...friendsList, user]);
-    });
-    socket.on('receive_friends_list', (users) => {
-        console.log('receiving friend list');
-        setFriendsList(users);
-    });
-
-    const handleFriendsQuery = () => {
-        socket.emit('query_friends_list');
-    };
-    const handleFriendSelect = (friend: LoginInfo) => {
-        props.setSelectedFriendId(friend.userId);
-        console.log(friend.userId);
+    const handleUserSelect = (user: LoginInfo) => {
+        props.setSelectedUserId(user.userId);
+        console.log(user.userId);
     };
 
-    const friendsDisplay = friendsList.map((friend: LoginInfo) => (
+    const userDisplay = props.userList.map((user: LoginInfo) => (
         <li>
             <div className='border shadow rounded-lg m-2 p-2'>
                 <button
-                    onClick={() => handleFriendSelect(friend)}
+                    onClick={() => handleUserSelect(user)}
                     className={classnames({
                         'hover:bg-gray-100 active:bg-gray-200 transition rounded-lg p-2 flex gap-2 items-center justify-around w-full':
                             true,
                     })}
-                    disabled={socket.id === friend.userId}
+                    disabled={socket.id === user.userId}
                 >
-                    <Avatar fallback={friend.userName[0]} />
-                    <div>{friend.userName}</div>
-                    {socket.id === friend.userId && (
+                    <Avatar fallback={user.userName[0]} />
+                    <div>{user.userName}</div>
+                    {socket.id === user.userId && (
                         <div className='opacity-50'>(yourself)</div>
                     )}
                     <div className='ml-auto'>
@@ -54,7 +33,7 @@ const FriendsWindow = (props: any) => {
         </li>
     ));
 
-    return <ul>{friendsDisplay}</ul>;
+    return <ul>{userDisplay}</ul>;
 };
 
 export default FriendsWindow;

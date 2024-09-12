@@ -2,13 +2,47 @@
 
 import FriendsWindow from '@/components/FriendsWindow';
 import MessageWindow from '@/components/MessageWindow';
+import { socket } from '@/socket';
 import { Card } from '@radix-ui/themes';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 const UserPage = ({ params }: { params: { user: string } }) => {
-    const [selectedFriendId, setSelectedFriendId] = useState('');
+    const [selectedUserId, setSelectedUserId] = useState('');
+    const [alertQueue, setAlertQueue] = useState([]);
+
+    const [userList, setUserList] = useState([
+        { userName: '', password: '', userId: '' },
+    ]);
+
+    useEffect(() => {
+        handleFriendsQuery();
+    }, []);
+
+    socket.on('user_connected', (user) => {
+        console.log('a new user has entered the chat');
+        setUserList([...userList, user]);
+    });
+
+    socket.on('user_connected', (user) => {
+        console.log('The user has left the chat');
+        setUserList([...userList, user]);
+    });
+
+    socket.on('receive_friends_list', (users) => {
+        console.log('receiving friend list');
+        setUserList(users);
+    });
+
+    const handleFriendsQuery = () => {
+        socket.emit('query_friends_list');
+    };
+
+    // const alerts = alertQueue.map((a) => <Alert content={a?.content} />);
 
     return (
-        <div id='chat-page' className='grid grid-cols-5 h-screen space-x-4 p-4'>
+        <div
+            id='chat-page'
+            className='grid grid-cols-5 h-screen w-full space-x-4 p-4'
+        >
             <div className='grid col-span-2 space-y-4'>
                 <div id='chat-groups' className='row-span-1'>
                     <Card className='h-full shadow'></Card>
@@ -16,7 +50,8 @@ const UserPage = ({ params }: { params: { user: string } }) => {
                 <div id='chat-friends' className='row-span-1'>
                     <Card className='h-full shadow'>
                         <FriendsWindow
-                            setSelectedFriendId={setSelectedFriendId}
+                            userList={userList}
+                            setSelectedUserId={setSelectedUserId}
                         ></FriendsWindow>
                     </Card>
                 </div>
@@ -24,9 +59,9 @@ const UserPage = ({ params }: { params: { user: string } }) => {
             <div id='chat-messaging' className='col-span-3'>
                 <Card className='h-full shadow'>
                     {/* Enable for production */}
-                    {selectedFriendId !== '' && (
+                    {selectedUserId !== '' && (
                         <MessageWindow
-                            selectedFriendId={selectedFriendId}
+                            selectedUserId={selectedUserId}
                         ></MessageWindow>
                     )}
 

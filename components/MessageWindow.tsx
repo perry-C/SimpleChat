@@ -10,7 +10,6 @@ interface MessageData {
 const mockData = [
     { content: 'hi chen', fromSelf: true },
     { content: 'hi pai', fromSelf: false },
-    { content: 'what the fuck', fromSelf: false },
     { content: 'I dont know', fromSelf: true },
     { content: 'doesnt matter', fromSelf: false },
     { content: 'bye ', fromSelf: true },
@@ -36,7 +35,7 @@ const MessageWindow = (props: any) => {
             if (messageInputRef.current) messageInputRef.current.value = '';
             socket.emit('send_message', {
                 message,
-                to: props.selectedFriendId,
+                to: props.selectedUserId,
             });
 
             setMessageLog([

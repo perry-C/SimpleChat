@@ -20,6 +20,7 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('user_connected', {
         userId: socket.id,
         userName: socket.userName,
+        connected: true,
     });
 
     socket.on('join_room', (roomId) => {
@@ -33,6 +34,7 @@ io.on('connection', (socket) => {
             users.push({
                 userId: id,
                 userName: socket.userName,
+                connected: true,
             });
         }
         socket.emit('receive_friends_list', users);
@@ -49,7 +51,7 @@ io.on('connection', (socket) => {
     });
 });
 
-// Register the a middleware for user name authentication
+// Register the a middleware for user name and password authentication
 io.use((socket, next) => {
     const userName = socket.handshake.auth.userName;
     if (!userName) {
@@ -58,6 +60,29 @@ io.use((socket, next) => {
     socket.userName = userName;
     next();
 });
+
+// io.use((socket, next) => {
+//     const sessionID = socket.handshake.auth.sessionID;
+//     if (sessionID) {
+//         // find existing session
+//         const session = sessionStore.findSession(sessionID);
+//         if (session) {
+//             socket.sessionID = sessionID;
+//             socket.userID = session.userID;
+//             socket.username = session.username;
+//             return next();
+//         }
+//     }
+//     const username = socket.handshake.auth.username;
+//     if (!username) {
+//         return next(new Error('invalid username'));
+//     }
+//     // create new session
+//     socket.sessionID = randomId();
+//     socket.userID = randomId();
+//     socket.username = username;
+//     next();
+// });
 
 const PORT = process.env.PORT || 3001;
 httpServer.listen(PORT, () => {
