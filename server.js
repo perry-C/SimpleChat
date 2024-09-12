@@ -23,11 +23,6 @@ io.on('connection', (socket) => {
         connected: true,
     });
 
-    // socket.on('join_room', (roomId) => {
-    //     socket.join(roomId);
-    //     console.log(`user with id-${socket.id} joined room - ${roomId}`);
-    // });
-
     socket.on('query_friends_list', () => {
         const users = [];
         for ([id, socket] of io.of('/').sockets) {
@@ -48,7 +43,11 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         console.log('A user disconnected:', socket.id);
-        socket.broadcast.emit('another_user_disconnected', socket.id);
+        socket.broadcast.emit('another_user_disconnected', {
+            userId: socket.id,
+            userName: socket.userName,
+            connected: false,
+        });
     });
 });
 

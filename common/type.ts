@@ -5,7 +5,12 @@ export interface LoginInfo {
 }
 
 export interface UserInfo {
-    userId: string,
-    userName: string,
-    connected: boolean,
+    userId: string;
+    userName: string;
+    connected: boolean;
+}
+
+export interface AlertInfo {
+    content: string;
+    type: string;
 }
