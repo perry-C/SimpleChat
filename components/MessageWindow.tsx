@@ -1,7 +1,7 @@
 import { socket } from '@/socket';
 import { TextField } from '@radix-ui/themes';
 import classnames from 'classnames';
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 interface MessageData {
     content: string;
     fromSelf: boolean;
@@ -20,10 +20,19 @@ const MessageWindow = (props: any) => {
     const message = useRef('');
     const messageInputRef = useRef<HTMLInputElement>(null);
     // const [messageLog, setMessageLog] = useState<MessageData[]>(mockData);
-    const [messageLog, setMessageLog] = useState(props.messages);
+    const fromMessages = props.fromMessage || [];
+    const toMessages = props.toMessage || [];
+
+    const messages = props.fromMessages
+        .concat(props.toMessages)
+        .sort((a, b) => {
+            a.time - b.time;
+        });
+
+    const [messageLog, setMessageLog] = useState(messages);
 
     socket.on('receive_message', (message) => {
-        setMessageLog([...messageLog, { content: message, fromSelf: false }]);
+        setMessageLog([...messageLog, message]);
     });
 
     const handleMessageUpdate = (e: ChangeEvent<HTMLInputElement>) => {
@@ -33,15 +42,15 @@ const MessageWindow = (props: any) => {
         if (e.type === 'keydown' && e.key !== 'Enter') return;
         if (message.current !== '') {
             if (messageInputRef.current) messageInputRef.current.value = '';
-            socket.emit('send_message', {
+            const newMessage = {
                 content: message.current,
+                from: socket.userId,
                 to: props.selectedUserId,
-            });
+                time: Date.now(),
+            };
+            socket.emit('send_message', newMessage);
 
-            setMessageLog([
-                ...messageLog,
-                { content: message.current, fromSelf: true },
-            ]);
+            setMessageLog([...messageLog, newMessage]);
         }
     };
 
@@ -49,13 +58,12 @@ const MessageWindow = (props: any) => {
         <li className='flex'>
             <div
                 className={classnames({
-                    'ml-auto bg-compPri': m.from === socket.userId,
-                    'ml-auto bg-compPri': m.to === socket.userId,
-                    'mr-auto bg-compSec': m.from !== socket.userId,
+                    'ml-auto bg-compPri': m?.from === socket.userId,
+                    'mr-auto bg-compSec': m?.from !== socket.userId,
                     'text-white text-2xl flex p-4 rounded-lg': true,
                 })}
             >
-                {m.content}
+                {m.content || ''}
             </div>
         </li>
     ));

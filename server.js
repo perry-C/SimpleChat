@@ -106,16 +106,18 @@ io.on('connection', (socket) => {
         socket.emit('users', users);
     });
 
-    socket.on('send_message', ({ content, to }) => {
+    socket.on('send_message', ({ content, from, to, time }) => {
         console.log(`Server sending message from ${socket.userId}`);
+
         // Persisting the message in the local store
         const message = {
             content,
-            from: socket.userId,
+            from,
             to,
+            time,
         };
 
-        socket.to(to).to(socket.userId).emit('receive_message', content);
+        socket.to(to).to(socket.userId).emit('receive_message', message);
         console.log(`Server sending message to ${to}`);
         messageStore.saveMessage(message);
     });

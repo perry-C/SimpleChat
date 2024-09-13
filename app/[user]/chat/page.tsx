@@ -106,9 +106,14 @@ const UserPage = ({ params }: { params: { user: string } }) => {
                         {selectedUserId !== '' && (
                             <MessageWindow
                                 selectedUserId={selectedUserId}
-                                messages={
+                                toMessages={
                                     userList.find(
                                         (user) => user.userId === selectedUserId
+                                    )?.messages
+                                }
+                                fromMessages={
+                                    userList.find(
+                                        (user) => user.userId === socket.userId
                                     )?.messages
                                 }
                             ></MessageWindow>
