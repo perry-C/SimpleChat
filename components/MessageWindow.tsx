@@ -23,11 +23,9 @@ const MessageWindow = (props: any) => {
     const fromMessages = props.fromMessage || [];
     const toMessages = props.toMessage || [];
 
-    const messages = props.fromMessages
-        .concat(props.toMessages)
-        .sort((a, b) => {
-            a.time - b.time;
-        });
+    const messages = fromMessages.concat(toMessages.toMessages).sort((a, b) => {
+        a.time - b.time;
+    });
 
     const [messageLog, setMessageLog] = useState(messages);
 
@@ -54,19 +52,23 @@ const MessageWindow = (props: any) => {
         }
     };
 
-    const messageListMap = messageLog.map((m) => (
-        <li className='flex'>
-            <div
-                className={classnames({
-                    'ml-auto bg-compPri': m?.from === socket.userId,
-                    'mr-auto bg-compSec': m?.from !== socket.userId,
-                    'text-white text-2xl flex p-4 rounded-lg': true,
-                })}
-            >
-                {m.content || ''}
-            </div>
-        </li>
-    ));
+    const messageListMap = messageLog.map((m) =>
+        m ? (
+            <li className='flex'>
+                <div
+                    className={classnames({
+                        'ml-auto bg-compPri': m?.from === socket.userId,
+                        'mr-auto bg-compSec': m?.from !== socket.userId,
+                        'text-white text-2xl flex p-4 rounded-lg': true,
+                    })}
+                >
+                    {m.content}
+                </div>
+            </li>
+        ) : (
+            <li></li>
+        )
+    );
     return (
         <div className='flex flex-col justify-end space-y-4 h-full'>
             <div id='message-display-window'>
