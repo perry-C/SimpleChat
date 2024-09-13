@@ -24,7 +24,6 @@ const UserPage = ({ params }: { params: { user: string } }) => {
         setUserList([...userList, user]);
         if (!enterAlertQueue.includes(user.userName))
             setEnterAlertQueue([...enterAlertQueue, user.userName]);
-        console.log(enterAlertQueue);
     });
 
     socket.on('another_user_disconnected', (user) => {
@@ -37,6 +36,15 @@ const UserPage = ({ params }: { params: { user: string } }) => {
         console.log('receiving friend list');
         setUserList(users);
     });
+
+    useEffect(() => {
+        // Reconnect to the previous session after refreshing the page
+        const sessionId = localStorage.getItem('sessionId');
+        if (sessionId) {
+            socket.auth = { sessionId };
+            socket.connect();
+        }
+    }, []);
 
     const handleFriendsQuery = () => {
         socket.emit('query_friends_list');

@@ -18,7 +18,7 @@ const FriendsWindow = (props: any) => {
                         'hover:bg-gray-100 active:bg-gray-200 transition rounded-lg p-2 flex gap-2 items-center justify-around w-full':
                             true,
                     })}
-                    disabled={socket.id === user.userId}
+                    // disabled={socket.id === user.userId}
                 >
                     <Avatar fallback={user.userName[0]} />
                     <div>{user.userName}</div>

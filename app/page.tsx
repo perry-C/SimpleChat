@@ -23,7 +23,6 @@ const Home = () => {
         }
     };
 
-
     return (
         <div
             id='login-page'
