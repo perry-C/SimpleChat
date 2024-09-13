@@ -1,7 +1,7 @@
 import { socket } from '@/socket';
 import { TextField } from '@radix-ui/themes';
 import classnames from 'classnames';
-import { ChangeEvent, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 interface MessageData {
     content: string;
     fromSelf: boolean;
@@ -20,7 +20,7 @@ const MessageWindow = (props: any) => {
     const message = useRef('');
     const messageInputRef = useRef<HTMLInputElement>(null);
     // const [messageLog, setMessageLog] = useState<MessageData[]>(mockData);
-    const [messageLog, setMessageLog] = useState<MessageData[]>([]);
+    const [messageLog, setMessageLog] = useState(props.messages);
 
     socket.on('receive_message', (message) => {
         setMessageLog([...messageLog, { content: message, fromSelf: false }]);
@@ -34,7 +34,7 @@ const MessageWindow = (props: any) => {
         if (message.current !== '') {
             if (messageInputRef.current) messageInputRef.current.value = '';
             socket.emit('send_message', {
-                message,
+                content: message.current,
                 to: props.selectedUserId,
             });
 
@@ -49,8 +49,9 @@ const MessageWindow = (props: any) => {
         <li className='flex'>
             <div
                 className={classnames({
-                    'ml-auto bg-compPri': m.fromSelf,
-                    'mr-auto bg-compSec': !m.fromSelf,
+                    'ml-auto bg-compPri': m.from === socket.userId,
+                    'ml-auto bg-compPri': m.to === socket.userId,
+                    'mr-auto bg-compSec': m.from !== socket.userId,
                     'text-white text-2xl flex p-4 rounded-lg': true,
                 })}
             >

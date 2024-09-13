@@ -29,8 +29,9 @@ const Home = () => {
             socket.auth = { sessionId };
             // store it in the localStorage
             localStorage.setItem('sessionId', sessionId);
+            localStorage.setItem('userId', userId);
             // save the ID of the user
-            socket.userId = userId;
+            // socket.userId = userId;
         });
         return () => {
             socket.off('session');

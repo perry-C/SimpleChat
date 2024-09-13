@@ -8,7 +8,9 @@ const crypto = require('crypto');
 const randomId = () => crypto.randomBytes(8).toString('hex');
 
 const { InMemorySessionStore } = require('./sessionStore');
+const { InMemoryMessageStore } = require('./messageStore');
 const sessionStore = new InMemorySessionStore();
+const messageStore = new InMemoryMessageStore();
 
 const io = new Server(httpServer, {
     cors: {
@@ -24,7 +26,6 @@ io.use((socket, next) => {
     const sessionId = socket.handshake.auth.sessionId;
 
     if (sessionId) {
-
         // find existing session
         const session = sessionStore.findSession(sessionId);
 
@@ -69,33 +70,60 @@ io.on('connection', (socket) => {
 
     // notify existing users
     socket.broadcast.emit('another_user_connected', {
-        userId: socket.id,
+        userId: socket.userId,
         userName: socket.userName,
         connected: true,
     });
 
-    socket.on('query_friends_list', () => {
-        const users = [];
-        for ([id, socket] of io.of('/').sockets) {
-            users.push({
-                userId: id,
-                userName: socket.userName,
-                connected: true,
-            });
+    // Fetching existing messages
+
+    const users = [];
+    const messagesPerUser = new Map();
+    messageStore.findMessagesForUser(socket.userId).forEach((message) => {
+        const { from, to } = message;
+        const otherUser = socket.userId === from ? to : from;
+        if (messagesPerUser.has(otherUser)) {
+            messagesPerUser.get(otherUser).push(message);
+        } else {
+            messagesPerUser.set(otherUser, [message]);
         }
-        socket.emit('receive_friends_list', users);
     });
 
-    socket.on('send_message', ({ message, to }) => {
-        console.log(`Server sending message from ${socket.id}`);
-        socket.to(to).emit('receive_message', message.current);
+    sessionStore.findAllSessions().forEach((session) => {
+        users.push({
+            userId: session.userId,
+            userName: session.userName,
+            connected: session.connected,
+            messages: messagesPerUser.get(session.userId) || [],
+        });
+    });
+
+    socket.emit('users', users);
+
+    // Register a client listener to manually query all connected clients info if needed
+
+    socket.on('get_users', () => {
+        socket.emit('users', users);
+    });
+
+    socket.on('send_message', ({ content, to }) => {
+        console.log(`Server sending message from ${socket.userId}`);
+        // Persisting the message in the local store
+        const message = {
+            content,
+            from: socket.userId,
+            to,
+        };
+
+        socket.to(to).to(socket.userId).emit('receive_message', content);
         console.log(`Server sending message to ${to}`);
+        messageStore.saveMessage(message);
     });
 
     socket.on('disconnect', () => {
-        console.log('A user disconnected:', socket.id);
+        console.log('A user disconnected:', socket.userId);
         socket.broadcast.emit('another_user_disconnected', {
-            userId: socket.id,
+            userId: socket.userId,
             userName: socket.userName,
             connected: false,
         });

@@ -6,7 +6,6 @@ import classnames from 'classnames';
 const FriendsWindow = (props: any) => {
     const handleUserSelect = (user: LoginInfo) => {
         props.setSelectedUserId(user.userId);
-        console.log(user.userId);
     };
 
     const userDisplay = props.userList.map((user: LoginInfo) => (
@@ -22,7 +21,7 @@ const FriendsWindow = (props: any) => {
                 >
                     <Avatar fallback={user.userName[0]} />
                     <div>{user.userName}</div>
-                    {socket.id === user.userId && (
+                    {socket.userId === user.userId && (
                         <div className='opacity-50'>(yourself)</div>
                     )}
                     <div className='ml-auto'>

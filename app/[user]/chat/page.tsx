@@ -13,11 +13,16 @@ const UserPage = ({ params }: { params: { user: string } }) => {
     const [exitAlertQueue, setExitAlertQueue] = useState<string[]>([]);
 
     const [userList, setUserList] = useState([
-        { userName: '', password: '', userId: '' },
+        {
+            userName: '',
+            userId: '',
+            connected: true,
+            messages: [],
+        },
     ]);
 
     useEffect(() => {
-        handleFriendsQuery();
+        socket.emit('get_users');
     }, []);
 
     socket.on('another_user_connected', (user) => {
@@ -32,7 +37,7 @@ const UserPage = ({ params }: { params: { user: string } }) => {
             setExitAlertQueue([...exitAlertQueue, user.userName]);
     });
 
-    socket.on('receive_friends_list', (users) => {
+    socket.on('users', (users) => {
         setUserList(users);
     });
 
@@ -40,16 +45,15 @@ const UserPage = ({ params }: { params: { user: string } }) => {
         // Reconnect to the previous session after refreshing the page
         const sessionId = localStorage.getItem('sessionId');
         const userName = localStorage.getItem('userName');
+        const userId = localStorage.getItem('userId');
 
         if (sessionId) {
             socket.auth = { sessionId };
+            socket.userName = userName;
+            socket.userId = userId;
             socket.connect();
         }
     }, []);
-
-    const handleFriendsQuery = () => {
-        socket.emit('query_friends_list');
-    };
 
     const alerts = enterAlertQueue.map((a, i) => (
         <li>
@@ -88,7 +92,9 @@ const UserPage = ({ params }: { params: { user: string } }) => {
                     <div id='chat-friends' className='row-span-1'>
                         <Card className='h-full shadow'>
                             <FriendsWindow
-                                userList={userList}
+                                userList={userList.filter(
+                                    (user) => user.connected
+                                )}
                                 setSelectedUserId={setSelectedUserId}
                             ></FriendsWindow>
                         </Card>
@@ -100,6 +106,11 @@ const UserPage = ({ params }: { params: { user: string } }) => {
                         {selectedUserId !== '' && (
                             <MessageWindow
                                 selectedUserId={selectedUserId}
+                                messages={
+                                    userList.find(
+                                        (user) => user.userId === selectedUserId
+                                    )?.messages
+                                }
                             ></MessageWindow>
                         )}
 
