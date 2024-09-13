@@ -24,8 +24,10 @@ io.use((socket, next) => {
     const sessionId = socket.handshake.auth.sessionId;
 
     if (sessionId) {
+
         // find existing session
         const session = sessionStore.findSession(sessionId);
+
         if (session) {
             socket.sessionId = sessionId;
             socket.userId = session.userId;
@@ -55,6 +57,12 @@ io.on('connection', (socket) => {
         userId: socket.userId,
         userName: socket.userName,
         connected: true,
+    });
+
+    // emit session details
+    socket.emit('session', {
+        sessionId: socket.sessionId,
+        userId: socket.userId,
     });
 
     socket.join(socket.userId);

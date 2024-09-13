@@ -33,13 +33,14 @@ const UserPage = ({ params }: { params: { user: string } }) => {
     });
 
     socket.on('receive_friends_list', (users) => {
-        console.log('receiving friend list');
         setUserList(users);
     });
 
     useEffect(() => {
         // Reconnect to the previous session after refreshing the page
         const sessionId = localStorage.getItem('sessionId');
+        const userName = localStorage.getItem('userName');
+
         if (sessionId) {
             socket.auth = { sessionId };
             socket.connect();

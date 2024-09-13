@@ -4,7 +4,7 @@ import { socket } from '@/socket';
 import { Button, Card, TextField } from '@radix-ui/themes';
 import '@radix-ui/themes/styles.css';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 const Home = () => {
     // TODO: record user name and room id, (add password validation later)
     // const [roomId, setRoomId] = useState('');
@@ -22,6 +22,20 @@ const Home = () => {
             alert('password and username pls');
         }
     };
+
+    useEffect(() => {
+        socket.on('session', ({ sessionId, userId }) => {
+            // attach the session ID to the next reconnection attempts
+            socket.auth = { sessionId };
+            // store it in the localStorage
+            localStorage.setItem('sessionId', sessionId);
+            // save the ID of the user
+            socket.userId = userId;
+        });
+        return () => {
+            socket.off('session');
+        };
+    }, []);
 
     return (
         <div
